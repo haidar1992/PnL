@@ -1,0 +1,508 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: #020617;
+  color: #e5e7eb;
+}
+
+.app {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+/* ======== LYXIG HEADER ======== */
+
+.app-header {
+  text-align: center;
+  margin-bottom: 2rem;
+  padding-top: 0.5rem;
+}
+
+.header-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.25rem 0.85rem;
+  border-radius: 999px;
+  border: 1px solid #3f3f46;
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #9ca3af;
+  background: rgba(255, 255, 255, 0.03);
+  margin-bottom: 0.7rem;
+}
+
+.header-title {
+  margin: 0;
+  font-size: 2.1rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  background: linear-gradient(135deg, #f59e0b, #facc15, #22c55e);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-shadow: 0 0 20px rgba(255, 255, 255, 0.05);
+}
+
+.header-subtitle {
+  margin: 0.7rem auto 0;
+  max-width: 580px;
+  font-size: 1rem;
+  line-height: 1.45;
+  color: #9ca3af;
+  opacity: 0.85;
+}
+
+
+main {
+  display: grid;
+  grid-template-columns: 1fr; /* en sektion åt gången */
+  gap: 1.5rem;
+}
+
+/* Vy-knappar (bara ikoner) */
+
+.view-switch {
+  display: flex;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.view-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  border: 1px solid #1f2937;
+  background: #020617;
+  color: #9ca3af;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1.1rem;
+  transition: background 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
+}
+
+.view-btn.active {
+  background: #111827;
+  color: #e5e7eb;
+  border-color: #3b82f6;
+  transform: translateY(-1px);
+}
+
+.view-btn:hover {
+  background: #020617;
+  border-color: #4b5563;
+}
+
+/* Dölj sektioner */
+
+.hidden {
+  display: none;
+}
+
+/* Sektioner */
+
+section {
+  background: #020617;
+  border-radius: 1rem;
+  padding: 1rem;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.7);
+  border: 1px solid #111827;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.section-header h2 {
+  margin: 0.2rem 0;
+}
+
+/* Månadskontroller */
+
+.month-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.month-controls button {
+  border: none;
+  background: #111827;
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  cursor: pointer;
+  color: #e5e7eb;
+  font-size: 0.9rem;
+}
+
+.month-controls button:hover {
+  background: #020617;
+}
+
+#month-label {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+/* Valuta-väljare */
+
+.currency-settings {
+  margin-top: 0.75rem;
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: #9ca3af;
+}
+
+.currency-settings select {
+  background: #020617;
+  border: 1px solid #1f2937;
+  border-radius: 999px;
+  padding: 0.25rem 0.75rem;
+  color: #e5e7eb;
+  font-size: 0.85rem;
+}
+
+#calendar-legend {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  font-size: 0.85rem;
+  margin: 0.4rem 0 0.75rem;
+}
+
+.legend-box {
+  width: 14px;
+  height: 14px;
+  border-radius: 4px;
+  display: inline-block;
+  margin-right: 0.25rem;
+}
+
+.legend-box.win {
+  background: rgba(16, 185, 129, 0.7);
+}
+
+.legend-box.loss {
+  background: rgba(248, 113, 113, 0.8);
+}
+
+.legend-box.flat {
+  background: rgba(148, 163, 184, 0.8);
+}
+
+/* Kalender */
+
+#calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.35rem;
+}
+
+/* Kalenderruta – kvadratisk, glow, tydlig text */
+
+.calendar-cell {
+  position: relative;
+  background: radial-gradient(circle at top left, #020617 0, #020617 40%, #020617 100%);
+  border-radius: 0.9rem;
+  border: 1px solid #111827;
+  aspect-ratio: 1 / 1;
+  min-height: 90px;
+  padding: 0.4rem 0.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  cursor: pointer;
+  transition:
+    transform 0.12s ease,
+    box-shadow 0.12s ease,
+    border-color 0.12s ease,
+    background 0.12s ease;
+  overflow: hidden;
+}
+
+.calendar-cell:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6);
+  border-color: #1f2937;
+}
+
+.calendar-cell.empty {
+  border-style: dashed;
+  opacity: 0.25;
+  cursor: default;
+}
+
+.calendar-date {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #6b7280;
+}
+
+.calendar-pnl {
+  font-size: 0.9rem;
+  font-weight: 600;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.calendar-meta {
+  font-size: 0.7rem;
+  color: #9ca3af;
+  margin-top: 0.15rem;
+  line-height: 1.1;
+  max-height: 2.2em;
+  overflow: hidden;
+}
+
+/* Vinst/förlust/flat */
+
+.calendar-cell.win {
+  background: radial-gradient(circle at top right, rgba(34, 197, 94, 0.12), #020617 55%);
+  border-color: rgba(34, 197, 94, 0.6);
+}
+
+.calendar-cell.loss {
+  background: radial-gradient(circle at top right, rgba(248, 113, 113, 0.12), #020617 55%);
+  border-color: rgba(248, 113, 113, 0.6);
+}
+
+.calendar-cell.flat {
+  background: radial-gradient(circle at top right, rgba(59, 130, 246, 0.05), #020617 55%);
+  border-color: #111827;
+}
+
+/* Månads-sammanfattning */
+
+#month-summary {
+  margin-top: 0.9rem;
+  font-size: 0.9rem;
+  display: grid;
+  gap: 0.1rem;
+}
+
+/* Daglig statistik */
+
+.stats-box {
+  margin-top: 1rem;
+  padding: 0.75rem;
+  border-radius: 0.75rem;
+  background: #020617;
+  border: 1px solid #1f2937;
+  font-size: 0.88rem;
+}
+
+.stats-box h3 {
+  margin-top: 0;
+  margin-bottom: 0.4rem;
+}
+
+/* Journal */
+
+#journal-section h2 {
+  margin-top: 0;
+}
+
+#trade-form {
+  display: grid;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.form-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+label {
+  font-size: 0.9rem;
+  color: #9ca3af;
+}
+
+input,
+select,
+textarea {
+  background: #020617;
+  border: 1px solid #1f2937;
+  border-radius: 0.6rem;
+  padding: 0.4rem 0.5rem;
+  color: #e5e7eb;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: #3b82f6;
+}
+
+.primary-btn {
+  margin-top: 0.5rem;
+  padding: 0.45rem 0.75rem;
+  border-radius: 0.75rem;
+  border: none;
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.primary-btn:hover {
+  filter: brightness(1.05);
+}
+
+/* Filter & tags */
+
+.journal-filter {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  flex-wrap: wrap;
+  font-size: 0.85rem;
+}
+
+.journal-filter button {
+  border-radius: 0.6rem;
+  border: 1px solid #1f2937;
+  background: #111827;
+  padding: 0.3rem 0.6rem;
+  cursor: pointer;
+  font-size: 0.8rem;
+  color: #e5e7eb;
+}
+
+.journal-filter button:hover {
+  background: #020617;
+}
+
+.journal-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  font-size: 0.85rem;
+}
+
+#tags-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.tag-chip {
+  padding: 0.2rem 0.5rem;
+  border-radius: 999px;
+  border: 1px solid #374151;
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+
+.tag-chip.active {
+  background: #3b82f6;
+  border-color: #60a5fa;
+}
+
+/* Tabell */
+
+#trades-table-wrapper {
+  max-height: 320px;
+  overflow: auto;
+  border-radius: 0.75rem;
+  border: 1px solid #1f2937;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+thead {
+  position: sticky;
+  top: 0;
+  background: #020617;
+  z-index: 1;
+}
+
+th,
+td {
+  padding: 0.45rem;
+  border-bottom: 1px solid #111827;
+  text-align: left;
+  vertical-align: top;
+}
+
+td.pnl-positive {
+  color: #4ade80;
+}
+
+td.pnl-negative {
+  color: #f87171;
+}
+
+.delete-btn {
+  border: none;
+  background: #1f2937;
+  color: #fca5a5;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.6rem;
+  cursor: pointer;
+  font-size: 0.7rem;
+}
+
+.delete-btn:hover {
+  background: #111827;
+}
+
+/* Footer */
+
+footer {
+  margin-top: 1rem;
+  text-align: center;
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+/* Loading-screen */
+
+#loading-screen {
+  position: fixed;
+  inset: 0;
+  background: #020617;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  transition: opacity 0.3s ease;
+}
+
+#loading-screen img {
+  width: 180px;
+  max-width: 60%;
+  opacity: 0.96;
+}
+
+/* Mobil */
+
+@media (max-width: 900px) {
+  main {
+    grid-template-columns: 1fr;
+  }
+}

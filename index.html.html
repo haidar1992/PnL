@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PnL Kalender & Tradingjournal</title>
+
+  <!-- PWA / app-inställningar -->
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#020617" />
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- Loading / splash-overlay -->
+  <div id="loading-screen">
+    <img src="splash.png" alt="Loading" />
+  </div>
+
+  <div class="app">
+        <!-- 🔐 Inloggning / konto -->
+    <section id="auth-section">
+      <div id="auth-logged-out">
+        <h2>Logga in / skapa konto</h2>
+        <input id="auth-email" type="email" placeholder="E-post" />
+        <input id="auth-password" type="password" placeholder="Lösenord" />
+        <button id="auth-register-btn" type="button">Skapa konto</button>
+        <button id="auth-login-btn" type="button">Logga in</button>
+        <p id="auth-message"></p>
+      </div>
+
+      <div id="auth-logged-in" class="hidden">
+  <p>Inloggad som <span id="auth-user-email"></span></p>
+  <button id="auth-logout-btn" type="button">Logga ut</button>
+
+  <!-- 🔥 Endast för att testa Firestore -->
+  <button id="firestore-test-btn" type="button">Testa Firestore</button>
+</div>
+
+    </section>
+
+    <header class="app-header">
+  <div class="header-badge">TRADING PERFORMANCE SUITE</div>
+
+  <h1 class="header-title">
+    PnL Dashboard & Trading Journal
+  </h1>
+
+  <p class="header-subtitle">
+    En professionell översikt av din handel med daglig PnL, R-multiplar och en strukturerad journal för varje trade.
+  </p>
+</header>
+
+
+    <!-- Välj vy med ikoner -->
+    <div class="view-switch">
+      <button class="view-btn active" data-view="calendar" title="Kalender">
+        <span class="view-icon">📅</span>
+      </button>
+      <button class="view-btn" data-view="journal" title="Journal">
+        <span class="view-icon">✍️</span>
+      </button>
+      <button class="view-btn" data-view="stats" title="Statistik">
+        <span class="view-icon">📊</span>
+      </button>
+    </div>
+
+    <main>
+      <!-- 📅 PnL-kalender -->
+      <section id="calendar-section">
+        <div class="section-header">
+          <h2>PnL Kalender</h2>
+          <div class="month-controls">
+            <button id="prev-month">&#8592;</button>
+            <span id="month-label"></span>
+            <button id="next-month">&#8594;</button>
+          </div>
+        </div>
+
+        <!-- Valuta-väljare -->
+        <div class="currency-settings">
+          <span>Valuta:</span>
+          <select id="currency-select">
+            <option value="SEK">SEK (kr)</option>
+            <option value="USD">USD ($)</option>
+          </select>
+        </div>
+
+        <div id="calendar-legend">
+          <span class="legend-box win"></span> Vinstdag
+          <span class="legend-box loss"></span> Förlustdag
+          <span class="legend-box flat"></span> ± 0
+        </div>
+
+        <div id="calendar-grid"></div>
+      </section>
+
+      <!-- 📊 Statistik -->
+      <section id="stats-section" class="hidden">
+        <div class="section-header">
+          <h2>Statistik</h2>
+        </div>
+
+        <div id="month-summary">
+          <p>Summa denna månad: <span id="month-pnl">0</span></p>
+          <p>Antal vinstdagar: <span id="month-win-days">0</span></p>
+          <p>Antal förlustdagar: <span id="month-loss-days">0</span></p>
+          <p>Winrate (dagar): <span id="month-winrate">0</span>%</p>
+        </div>
+
+        <div id="day-stats" class="stats-box">
+          <h3>Daglig statistik</h3>
+          <p>Datum: <span id="stats-date">–</span></p>
+          <p>Antal trades: <span id="stats-trades">0</span></p>
+          <p>Vinster / Förluster / BE:
+            <span id="stats-wins">0</span> /
+            <span id="stats-losses">0</span> /
+            <span id="stats-be">0</span>
+          </p>
+          <p>Winrate: <span id="stats-winrate">0</span>%</p>
+          <p>Totalt PnL: <span id="stats-total-pnl">0</span></p>
+          <p>Snitt PnL: <span id="stats-avg-pnl">0</span></p>
+          <p>Totalt R: <span id="stats-total-r">0</span></p>
+          <p>Snitt R: <span id="stats-avg-r">0</span></p>
+        </div>
+      </section>
+
+      <!-- ✍️ Journal -->
+      <section id="journal-section" class="hidden">
+        <h2>Tradingjournal</h2>
+
+        <form id="trade-form">
+          <div class="form-row">
+            <label for="trade-date">Datum</label>
+            <input type="date" id="trade-date" required />
+          </div>
+
+          <div class="form-row">
+            <label for="instrument">Instrument (t.ex. EURUSD, US30)</label>
+            <input type="text" id="instrument" placeholder="EURUSD" required />
+          </div>
+
+          <div class="form-row">
+            <label for="direction">Riktning</label>
+            <select id="direction" required>
+              <option value="">Välj...</option>
+              <option value="Long">Long</option>
+              <option value="Short">Short</option>
+            </select>
+          </div>
+
+          <div class="form-row">
+            <label for="pnl">PnL (i din valuta)</label>
+            <input
+              type="number"
+              id="pnl"
+              step="0.01"
+              placeholder="t.ex. 250 eller -100"
+              required
+            />
+          </div>
+
+          <div class="form-row">
+            <label for="risk">Risk (1R i samma valuta)</label>
+            <input
+              type="number"
+              id="risk"
+              step="0.01"
+              placeholder="t.ex. 100 (om 1R = 100)"
+            />
+          </div>
+
+          <div class="form-row">
+            <label for="setup">Setup / beskrivning</label>
+            <input
+              type="text"
+              id="setup"
+              placeholder="t.ex. London session break &amp; retest"
+            />
+          </div>
+
+          <div class="form-row">
+            <label for="tags">Tags (komma-separerade)</label>
+            <input
+              type="text"
+              id="tags"
+              placeholder="t.ex. London, NY open, Reversal"
+            />
+          </div>
+
+          <div class="form-row">
+            <label for="notes">Anteckningar</label>
+            <textarea
+              id="notes"
+              rows="3"
+              placeholder="Vad gjorde du bra? Vad kan bli bättre?"
+            ></textarea>
+          </div>
+
+          <button type="submit" class="primary-btn">Spara trade</button>
+        </form>
+
+        <!-- Filter-del -->
+        <div class="journal-filter">
+          <label for="filter-date">Filtrera på datum:</label>
+          <input type="date" id="filter-date" />
+          <button id="clear-filter" type="button">Rensa filter</button>
+          <button id="export-csv" type="button">Exportera till CSV</button>
+        </div>
+
+        <div class="journal-tags">
+          <span>Filtrera på tag/setup:</span>
+          <div id="tags-container"></div>
+          <button id="clear-tag-filter" type="button">Rensa tag-filter</button>
+        </div>
+
+        <div id="trades-table-wrapper">
+          <table id="trades-table">
+            <thead>
+              <tr>
+                <th>Datum</th>
+                <th>Instrument</th>
+                <th>Long/Short</th>
+                <th>PnL</th>
+                <th>Risk (1R)</th>
+                <th>R-multipel</th>
+                <th>Setup</th>
+                <th>Tags</th>
+                <th>Anteckningar</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="trades-body">
+              <!-- Fylls av JavaScript -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <small>
+        Dina data sparas lokalt i din webbläsare (localStorage). <br />
+        Appen kan installeras som PWA på mobil/dator.
+      </small>
+    </footer>
+  </div>
+  <!-- 🔽 Firebase börjar här 🔽 -->
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/11.0.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.0.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore-compat.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyBVDPZFHeJHCspM9hOAyBLXZLpLGsLiAAE",
+      authDomain: "pnl-calendar-88c1a.firebaseapp.com",
+      projectId: "pnl-calendar-88c1a",
+      storageBucket: "pnl-calendar-88c1a.firebasestorage.app",
+      messagingSenderId: "488415948512",
+      appId: "1:488415948512:web:a4e5e53de311a818a9aa85",
+      measurementId: "G-C5ZVTYZJTP"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    console.log("Firebase är igång:", firebase.apps.length > 0);
+
+  </script>
+  <!-- 🔼 Firebase slutar här 🔼 -->
+
+  <!-- Din egen JavaScript-fil -->
+  <script src="app.js"></script>
+</body>
+</html>
+
